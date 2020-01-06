@@ -10,24 +10,26 @@ const fetchNovel = async url => {
   const promise = await fetch(url);
   let text = await promise.text();
   const next = nextPage(text);
+  const index = Number.parseInt(text.split("第")[1].split("章")[0]);
   text = text
     .split("<!--正文開始-->")[1]
     .split("<!--正文結束-->")[0]
-    .split("<a")[0] // clear ad
-    .replace(/<p\/>/g, "")
-    .replace(" 請記住:飛翔鳥中文小說網", "")
     .trim();
-  return { text, next };
+  return { index, text, next };
 };
 
 (async () => {
   // first page here
-  let url = "http://tw.fxnzw.com/fxnread/45415_8588665.html";
-  let index = 748;
+  let url = "http://tw.fxnzw.com/fxnread/45415_9145771.html";
   do {
     let param = await fetchNovel(url);
     url = param.next;
-    fs.writeFile(`texts/${index}.txt`, param.text, console.log);
-    index++;
+    let path = `texts/${param.index}.txt`;
+    if (fs.existsSync(path)) {
+      path.replace(".txt", "之2.txt");
+      console.log(`${param.index} Duplicate`);
+    }
+    fs.writeFile(path, param.text, () => {});
+    console.log(`${param.index} Done`);
   } while (url != "http://tw.fxnzw.com/fxnread/45415_0.html");
 })();
