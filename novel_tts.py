@@ -35,8 +35,12 @@ files = iter(
 )
 
 file = next(files)
+start = 0
 
 while True:
+    if int(re.search(r"\d+", file).group()) < start:
+        file = next(files)
+        continue
     try:
         tts = gTTS(clean(open(f"texts/{file}").read()), lang="zh-tw")
         tts.save(f"sounds/{file.replace('.txt', '')}.mp3")
@@ -48,6 +52,3 @@ while True:
     else:
         print(f"{file} Done")
         file = next(files)
-
-
-print("All Done")
