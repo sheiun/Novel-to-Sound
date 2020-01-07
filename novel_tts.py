@@ -27,28 +27,34 @@ def clean(text: str) -> str:
     )
 
 
-files = iter(
-    sorted(
-        filter(lambda f: f.endswith(".txt"), os.listdir("texts/")),
-        key=lambda f: int(re.search(r"\d+", f).group()),
+def batch_convert(files, start=0):
+    file = next(files)
+    while True:
+        if int(re.search(r"\d+", file).group()) < start:
+            file = next(files)
+            continue
+        try:
+            tts = gTTS(clean(open(f"texts/{file}").read()), lang="zh-tw")
+            tts.save(f"sounds/{file.replace('.txt', '')}.mp3")
+        except FileNotFoundError:
+            print(f"{file} Not Found")
+            break
+        except Exception as e:
+            print(f"{file} Break, Cause: {e}")
+        else:
+            print(f"{file} Done")
+            file = next(files)
+
+
+def main():
+    files = iter(
+        sorted(
+            filter(lambda f: f.endswith(".txt"), os.listdir("texts/")),
+            key=lambda f: int(re.search(r"\d+", f).group()),
+        )
     )
-)
+    batch_convert(files)
 
-file = next(files)
-start = 0
 
-while True:
-    if int(re.search(r"\d+", file).group()) < start:
-        file = next(files)
-        continue
-    try:
-        tts = gTTS(clean(open(f"texts/{file}").read()), lang="zh-tw")
-        tts.save(f"sounds/{file.replace('.txt', '')}.mp3")
-    except FileNotFoundError:
-        print(f"{file} Not Found")
-        break
-    except Exception as e:
-        print(f"{file} Break, Cause: {e}")
-    else:
-        print(f"{file} Done")
-        file = next(files)
+if __name__ == "__main__":
+    main()
