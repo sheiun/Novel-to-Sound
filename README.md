@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Let eyes rest.
+Rest your eyes and read novels with your ears.
 
 ## Flow
 
